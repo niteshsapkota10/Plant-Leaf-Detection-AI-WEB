@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plant Diseases Prediction</title>
+    <style>
+      .probs {
+        color: brown;
+        border: 2px solid red;
+      }
+    </style>
+  </head>
+  <body bgcolor="lightgreen">
+    <center>
+      <h2>Welcome to Plant Disease Prediction</h2>
+      <h3>Upload Leaves Image</h3>
+      {% if img%}
+      <img src="{{img}}" height="200" width="200" />
+      {% endif %}
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" />
+        <input type="submit" value="submit" />
+      </form>
+      {% if result%}
+      <h3>
+        The prediction made by our model for given image is <em>{{result}}</em>
+      </h3>
+      {% endif %} {% if category_percentage%}
+      <div class="probs">
+        <h3>Prediction Probabilities Percentages</h3>
+        {% for i in category_percentage%}
+        <p>{{i[0]}} = {{i[1]}}%</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </center>
+  </body>
+</html>

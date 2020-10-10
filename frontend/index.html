@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plant Diseases Prediction System</title>
+    <style>
+      #leave_image {
+        display: none;
+      }
+      #prob_table{
+        border: 1px solid salmon;
+      }
+    </style>
+  </head>
+  <body bgcolor="lightgreen">
+    <center>
+      <h1>Upload the image of leaf</h1>
+      <img id="leave_image" height="200px" width="200px" /><br />
+
+      <h3 id="output"></h3>
+
+      <form>
+        <input type="file" />
+        <button onclick="file_upload()">Upload</button>
+      </form>
+
+      <p id="probabilities">
+        <table id="prob_table">
+
+        </table>
+      </p>
+    </center>
+    <script>
+      function file_upload() {
+        event.preventDefault();
+        const formData = new FormData();
+        const fileField = document.querySelector('input[type="file"]');
+        formData.append("file", fileField.files[0]);
+        fetch("http://127.0.0.1:5000/rest/upload/", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            process_result(result);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+      function process_result(my_result) {
+        console.log(my_result);
+        if (Object.keys(my_result).length != 1) {
+          document.getElementById("leave_image").src = my_result["image_path"];
+          document.getElementById("leave_image").style.display = "block";
+          document.getElementById(
+            "output"
+          ).innerHTML = "Model Prediction : ".concat(my_result["result"]);
+          let tab='<thead><tr><td><b>Category</b></td><td><b>Probability Percentage</b></td></tr></thead>';
+          var probability_array=my_result["Category_Probability"];
+          for(let i=0;i<probability_array.length;i++){
+            tab+=`<tr><td>${probability_array[i][0]}</td><td>${probability_array[i][1]}%</td></tr>`;
+          }
+          document.getElementById("prob_table").innerHTML=tab;
+        } else {
+          alert("No Image is Selected");
+        }
+      }
+    </script>
+  </body>
+</html>
